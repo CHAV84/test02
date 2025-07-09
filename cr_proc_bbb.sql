@@ -7,5 +7,3 @@ BEGIN
     END LOOP;
 NULL;
 END;
-
--- main

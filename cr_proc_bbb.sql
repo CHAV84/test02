@@ -6,5 +6,6 @@ BEGIN
       NULL;
     END LOOP;
 NULL;
+-- b01
 END;
 

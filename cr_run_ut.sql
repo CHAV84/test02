@@ -1,0 +1,5 @@
+CREATE OR REPLACE PROCEDURE run_ut IS
+BEGIN
+  ut.run;
+END;
+/

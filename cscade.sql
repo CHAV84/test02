@@ -1,6 +1,7 @@
 -- Customers table
 /*
 
+
 CREATE TABLE customers (
   customer_id NUMBER PRIMARY KEY,
   name        VARCHAR2(100),

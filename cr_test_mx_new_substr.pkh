@@ -1,0 +1,18 @@
+CREATE OR REPLACE PACKAGE test_my_new_substr IS
+  --%suite(My New SUBSTR Function Tests)
+  --%suitepath(my_functions)
+  
+  --%test(Returns substring from valid input)
+  PROCEDURE test_valid_substring;
+
+  --%test(Handles empty input string)
+  PROCEDURE test_empty_input;
+
+  --%test(Handles NULL input string)
+  PROCEDURE test_null_input;
+
+  --%test(Start index out of range returns NULL or empty)
+  PROCEDURE test_start_out_of_bounds;
+
+END;
+/

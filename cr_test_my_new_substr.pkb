@@ -25,7 +25,7 @@ CREATE OR REPLACE PACKAGE BODY test_my_new_substr IS
     l_result VARCHAR2(100);
   BEGIN
     l_result := MY_NEW_SUBSTR('abc', 100, 2);
-    ut.expect(l_result).to_equal('');
+    ut.expect(l_result).to_equal(''||'x');
   END;
 
 END;

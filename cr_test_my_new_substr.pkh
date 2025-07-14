@@ -12,7 +12,7 @@ CREATE OR REPLACE PACKAGE test_my_new_substr IS
   PROCEDURE test_null_input;
 
   --%test(Start index out of range returns NULL or empty)
-  PROCEDURE test_start_out_of_bounds;
+  PROCEDURE test_start_out_of_bounds;x
 
 END;
 /

@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ORACLE_IMAGE = 'my-custom-oracle-image:latest'
+        ORACLE_IMAGE = 'my-custom-oracle-image-01:latest'
         ORACLE_CONTAINER = 'oracle-db'
         ORACLE_PASSWORD = 'oracle'
     }
@@ -41,7 +41,7 @@ stage('Start Oracle DB') {
                 sh '''
                     echo "Running setup.sql script..."
                     docker cp setup.sql $ORACLE_CONTAINER:/tmp/setup.sql
-                    docker exec $ORACLE_CONTAINER bash -c "echo '@/tmp/setup.sql' | sqlplus system/$ORACLE_PASSWORD@localhost:1521/ORCLPDB1"
+                    docker exec oracle-db bash -c "sqlplus sys/oracle@localhost:1521/ORCLPDB1 as sysdba @/tmp/setup.sql"
                 '''
             }
         }

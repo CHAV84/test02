@@ -41,17 +41,21 @@ stage('Run Setup SQL') {
         sh '''
             echo "Running setup.sql script..."
             docker cp setup.sql $ORACLE_CONTAINER:/tmp/setup.sql
-            docker exec $ORACLE_CONTAINER bash -c "sqlplus sys/oracle@localhost:1521/orclpdb1 as sysdba @/tmp/setup.sql"
-            
-            # Check if sqlplus exited successfully
+
+            echo "Executing SQL script in container..."
+            docker exec $ORACLE_CONTAINER bash -c '
+                sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
+                @/tmp/setup.sql
+                EXIT
+EOF
+            '
             if [ $? -ne 0 ]; then
-                echo "SQL*Plus command failed!"
-                exit 1  # This will cause the Jenkins step to fail
+                echo "SQL*Plus execution failed!"
+                exit 1
             fi
         '''
     }
 }
-
 
         stage('Use Oracle DB') {
             steps {

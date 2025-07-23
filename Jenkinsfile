@@ -31,7 +31,7 @@ stage('Start Oracle DB') {
             docker run -d --name oracle-db -e ORACLE_PASSWORD=password -p 1521:1521 my-custom-oracle-image-02:latest
 
             echo "Waiting 10 seconds for Oracle to start..."
-            sleep 10
+            sleep 90
         '''
     }
 }

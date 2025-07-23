@@ -53,7 +53,7 @@ stage('Start Oracle DB') {
             }
         }
     }
-
+/*
     post {
         always {
             sh '''
@@ -62,4 +62,5 @@ stage('Start Oracle DB') {
             '''
         }
     }
+    */
 }

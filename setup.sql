@@ -1,3 +1,3 @@
 PROMPT setup
 
-EXIT 1
+EXIT 0

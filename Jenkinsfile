@@ -51,7 +51,7 @@ EOF
             '
             if [ $? -ne 0 ]; then
                 echo "SQL*Plus execution failed!"
-                exit 0
+                exit 1
             fi
         '''
     }

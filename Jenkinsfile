@@ -41,7 +41,7 @@ stage('Start Oracle DB') {
                 sh '''
                     echo "Running setup.sql script..."
                     docker cp setup.sql $ORACLE_CONTAINER:/tmp/setup.sql
-                    docker exec $ORACLE_CONTAINER bash -c "echo '@/tmp/setup.sql' | sqlplus system/$ORACLE_PASSWORD@localhost/XEPDB1"
+                    docker exec $ORACLE_CONTAINER bash -c "echo '@/tmp/setup.sql' | sqlplus system/$ORACLE_PASSWORD@localhost/ORCLPDB1"
                 '''
             }
         }

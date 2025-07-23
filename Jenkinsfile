@@ -26,25 +26,18 @@ pipeline {
 
 stage('Start Oracle DB') {
     steps {
+stage('Start Oracle DB') {
+    steps {
         sh '''
             echo "Starting Oracle container..."
             docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 $ORACLE_IMAGE
 
-            echo "Waiting for Oracle to be ready..."
-            for i in {1..30}; do
-  if cat <<EOF | docker exec -i $ORACLE_CONTAINER sqlplus -s system/$ORACLE_PASSWORD@localhost/XEPDB1
-SELECT 1 FROM dual;
-EXIT;
-EOF
-  then
-    echo "Oracle is ready!"
-    break
-  else
-    echo "Waiting... ($i)"
-    sleep 10
-  fi
-done
+            echo "Waiting 10 seconds for Oracle to start..."
+            sleep 10
         '''
+    }
+}
+
     }
 }
 

@@ -32,18 +32,18 @@ stage('Start Oracle DB') {
 
             echo "Waiting for Oracle to be ready..."
             for i in {1..30}; do
-                if docker exec -i $ORACLE_CONTAINER bash -c "sqlplus -s system/$ORACLE_PASSWORD@localhost/XEPDB1 <<EOF
+  if cat <<EOF | docker exec -i $ORACLE_CONTAINER sqlplus -s system/$ORACLE_PASSWORD@localhost/XEPDB1
 SELECT 1 FROM dual;
 EXIT;
 EOF
-"; then
-                    echo "Oracle is ready!"
-                    break
-                else
-                    echo "Waiting... ($i)"
-                    sleep 10
-                fi
-            done
+  then
+    echo "Oracle is ready!"
+    break
+  else
+    echo "Waiting... ($i)"
+    sleep 10
+  fi
+done
         '''
     }
 }

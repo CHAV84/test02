@@ -50,14 +50,6 @@ EOF
         '''
     }
 }
-        stage('Run SQL Script') {
-            steps {
-                script {
-                    #def sqlFiles = params.SQL_FILES.split(',')
-                    #for (file in sqlFiles) {
-
-        }
-        
         stage('Use Oracle DB') {
             steps {
                 echo 'Oracle DB is up and configured.'

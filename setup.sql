@@ -7,7 +7,7 @@ WHENEVER OSERROR EXIT FAILURE;
 --create user mikep identified by mikep;
 --grant connect,resource to mikep;
 
-conn mikepx/mikep@ORCLPDB1
+conn mikep/mikep@ORCLPDB1
 
 PROMPT Logged in as user
 

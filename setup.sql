@@ -9,6 +9,7 @@ WHENEVER OSERROR EXIT FAILURE;
 
 conn mikep/mikep@ORCLPDB1
 
+  
 PROMPT Logged in as user
 
 -- SOURCE

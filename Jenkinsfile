@@ -30,6 +30,18 @@ pipeline {
                 '''
             }
         }
+        
+stage('Start Oracle DB') {
+    steps {
+        sh '''
+            echo "Starting Oracle container..."
+            docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 -v $WORKSPACE:/tmp/sqlscripts $ORACLE_IMAGE
+
+            echo "Waiting 60 seconds for Oracle to start..."
+            sleep 60
+        '''
+    }
+}
 
         
 stage('Debug Container Mount') {

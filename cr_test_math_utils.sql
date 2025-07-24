@@ -1,4 +1,4 @@
-XCREATE OR REPLACE PACKAGE test_math_utils IS
+CREATE OR REPLACE PACKAGE test_math_utils IS
   --%suite(Math Utils Tests)
   --%suitepath(math)
 
@@ -10,7 +10,7 @@ XCREATE OR REPLACE PACKAGE test_math_utils IS
 END;
 /
 
-XCREATE OR REPLACE PACKAGE BODY test_math_utils IS
+CREATE OR REPLACE PACKAGE BODY test_math_utils IS
 
   PROCEDURE test_square_of_3 IS
     v_result NUMBER;

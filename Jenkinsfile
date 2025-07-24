@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ORACLE_IMAGE = 'my-custom-oracle-image-02:latest'
+        ORACLE_IMAGE = 'my-custom-oracle-image-04_with_ut_installed:latest'
         ORACLE_CONTAINER = 'oracle-db'
         ORACLE_PASSWORD = 'oracle'
     }
@@ -28,7 +28,7 @@ stage('Start Oracle DB') {
     steps {
         sh '''
             echo "Starting Oracle container..."
-            docker run -d --name oracle-db -e ORACLE_PASSWORD=password -p 1521:1521 my-custom-oracle-image-02:latest
+            docker run -d --name oracle-db -e ORACLE_PASSWORD=password -p 1521:1521 my-custom-oracle-image-04_with_ut_installed:latest
 
             echo "Waiting 10 seconds for Oracle to start..."
             sleep 60

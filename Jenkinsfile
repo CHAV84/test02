@@ -29,7 +29,6 @@ stage('Start Oracle DB') {
     steps {
         sh '''
             echo "Starting Oracle container..."
-            --docker run -d --name oracle-db -e ORACLE_PASSWORD=password -p 1521:1521 my-custom-oracle-image-04_with_ut_installed:latest
             docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 -v $WORKSPACE:/tmp/sqlscripts $ORACLE_IMAGE
 
             echo "Waiting 60 seconds for Oracle to start..."
@@ -42,7 +41,6 @@ stage('Run Setup SQL') {
     steps {
         sh '''
             echo "Running setup.sql script..."
-            --docker cp setup.sql $ORACLE_CONTAINER:/tmp/setup.sql
 
             echo "Executing SQL script in container..."
             docker exec $ORACLE_CONTAINER bash -c '

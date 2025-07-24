@@ -35,7 +35,7 @@ stage('Start Oracle DB') {
     steps {
         sh '''
             echo "Starting Oracle container..."
-            docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 -v $WORKSPACE:/tmp/sqlscripts $ORACLE_IMAGE
+            docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 $ORACLE_IMAGE
 
             echo "Waiting 60 seconds for Oracle to start..."
             sleep 60
@@ -43,7 +43,14 @@ stage('Start Oracle DB') {
     }
 }
 
-        
+stage('Copy SQL Files to Container') {
+    steps {
+        sh """
+            docker cp ${WORKSPACE}/. oracle-db:/tmp/sqlscripts/
+        """
+    }
+}
+     
 stage('Debug Container Mount') {
     steps {
         sh """

@@ -31,6 +31,15 @@ pipeline {
             }
         }
 
+        
+stage('Debug Container Mount') {
+    steps {
+        sh """
+            docker exec $ORACLE_CONTAINER ls -l /tmp/sqlscripts
+        """
+    }
+}
+
 stage('Run Setup SQL') {
     steps {
         sh '''

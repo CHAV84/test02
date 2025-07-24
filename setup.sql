@@ -8,7 +8,9 @@ WHENEVER OSERROR EXIT FAILURE;
 --grant connect,resource to mikep;
 
 conn mikepx/mikep@ORCLPDB1
-  
+
+PROMPT Logged in as user
+
 -- SOURCE
 @test_math_utils.sql
 

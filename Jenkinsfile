@@ -67,7 +67,7 @@ stage('Run Setup SQL') {
             echo "Executing SQL script in container..."
             docker exec $ORACLE_CONTAINER bash -c '
                 sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
-                @/tmp/setup.sql
+                @/tmp/sqlscripts/setup.sql
                 EXIT
 EOF
             '

@@ -15,7 +15,13 @@ pipeline {
                 checkout scm
             }
         }
-        
+
+        stage('Debug Workspace') {
+    steps {
+        sh 'ls -l $WORKSPACE'
+    }
+}
+
         stage('Clean up old Oracle container') {
             steps {
                 sh '''
@@ -24,18 +30,6 @@ pipeline {
                 '''
             }
         }
-
-stage('Start Oracle DB') {
-    steps {
-        sh '''
-            echo "Starting Oracle container..."
-            docker run -d --name $ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 -v $WORKSPACE:/tmp/sqlscripts $ORACLE_IMAGE
-
-            echo "Waiting 60 seconds for Oracle to start..."
-            sleep 60
-        '''
-    }
-}
 
 stage('Run Setup SQL') {
     steps {
@@ -56,7 +50,14 @@ EOF
         '''
     }
 }
+        stage('Run SQL Script') {
+            steps {
+                script {
+                    #def sqlFiles = params.SQL_FILES.split(',')
+                    #for (file in sqlFiles) {
 
+        }
+        
         stage('Use Oracle DB') {
             steps {
                 echo 'Oracle DB is up and configured.'

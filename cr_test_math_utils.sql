@@ -10,7 +10,7 @@ XCREATE OR REPLACE PACKAGE test_math_utils IS
 END;
 /
 
-CREATE OR REPLACE PACKAGE BODY test_math_utils IS
+XCREATE OR REPLACE PACKAGE BODY test_math_utils IS
 
   PROCEDURE test_square_of_3 IS
     v_result NUMBER;

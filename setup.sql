@@ -13,9 +13,9 @@ conn mikep/mikep@ORCLPDB1
 PROMPT Logged in as user
 
 -- SOURCE
-@cr_math_utils.sql
+@@cr_math_utils.sql
 
 -- TESTS
-@cr_test_math_utils.sql
+@@cr_test_math_utils.sql
 
 EXIT 0

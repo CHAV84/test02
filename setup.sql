@@ -1,5 +1,8 @@
 PROMPT setup
 
+WHENEVER SQLERROR EXIT SQL.SQLCODE;
+WHENEVER OSERROR EXIT FAILURE;
+
 --conn sys/oracle@ORCLPDB1;
 --create user mikep identified by mikep;
 --grant connect,resource to mikep;

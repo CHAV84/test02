@@ -1,4 +1,4 @@
-CREATE OR REPLACE PACKAGE test_math_utils IS
+XCREATE OR REPLACE PACKAGE test_math_utils IS
   --%suite(Math Utils Tests)
   --%suitepath(math)
 

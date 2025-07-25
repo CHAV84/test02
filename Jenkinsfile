@@ -83,7 +83,7 @@ stage('Run Unit Tests') {
         sh '''
             echo "Running utPLSQL tests via utplsql-cli..."
 
-            utplsql run mikep/mikep@//oracle-db:1521/orclpdb1 mikep.test_math_utils \
+            java -jar /opt/utplsql/utplsql-cli.jar run mikep/mikep@//oracle-db:1521/orclpdb1 mikep.test_math_utils \
               -f=ut_documentation_reporter \
               -f=ut_junit_reporter -o=utplsql-test-results.xml
 

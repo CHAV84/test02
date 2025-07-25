@@ -61,12 +61,9 @@ stage('Run Unit Tests') {
             fi
 
             echo "Running utPLSQL tests..."
-            /opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//test-oracle-db:1522/orclpdb1 \
-                -p=mikep \
-                -f=ut_documentation_reporter -o=run.log \
-                -s \
-                -f=ut_coverage_html_reporter -o=coverage.html
-
+            
+            /opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//test-oracle-db:1522/orclpdb1 -p=mikep -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html
+            
             EXIT_CODE=$?
             if [ $EXIT_CODE -ne 0 ]; then
                 echo "utPLSQL tests failed with exit code $EXIT_CODE"

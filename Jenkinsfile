@@ -34,7 +34,7 @@ stage('TEST - Copy SQL Files to Container') {
 stage('TEST - Debug Container Mount') {
     steps {
         sh """
-            docker exec $TEST_ORACLE_CONTAINER ls -l /tmp/sqlscripts
+            docker exec $ORACLE_CONTAINER_TEST ls -l /tmp/sqlscripts
         """
     }
 }

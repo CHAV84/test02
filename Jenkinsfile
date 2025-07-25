@@ -26,10 +26,9 @@ pipeline {
 stage('TEST - Copy SQL Files to Container') {
     steps {
         sh """
-            docker cp ${WORKSPACE}/. $XORACLE_CONTAINER_TEST:/tmp/sqlscripts/
-            if [ $? -ne 0 ]; then
-                echo "Copy failed!"
-                exit 1
+            if ! docker cp "${WORKSPACE}/." "${XORACLE_CONTAINER_TEST}:/tmp/sqlscripts/"; then
+              echo "Copy failed!"
+              exit 1
             fi
         """
     }

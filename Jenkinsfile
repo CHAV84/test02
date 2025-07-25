@@ -26,7 +26,7 @@ pipeline {
 stage('TEST - Copy SQL Files to Container') {
     steps {
         sh """
-            docker cp ${WORKSPACE}/. $TEST_ORACLE_CONTAINER:/tmp/sqlscripts/
+            docker cp ${WORKSPACE}/. $ORACLE_CONTAINER_TEST:/tmp/sqlscripts/
         """
     }
 }

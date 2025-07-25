@@ -1,4 +1,4 @@
 BEGIN
-  ut.run('my_schema');
+  ut.run('MIKEP');
 END;
 /

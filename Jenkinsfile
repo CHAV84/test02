@@ -82,19 +82,22 @@ EOF
 stage('Run Unit Tests') {
     steps {
         sh '''
-            echo "Running ut.sql script..."
+            echo "Running utPLSQL test script..."
 
-            echo "Executing SQL script in container..."
             docker exec $ORACLE_CONTAINER bash -c '
+                echo "Executing SQL script in container..."
                 sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
-                @/tmp/sqlscripts/run_ut.sql
-                EXIT
+WHENEVER SQLERROR EXIT SQL.SQLCODE
+SET SERVEROUTPUT ON
+@/tmp/sqlscripts/run_ut.sql
+EXIT
 EOF
+                SQL_EXIT_CODE=$?
+                if [ $SQL_EXIT_CODE -ne 0 ]; then
+                    echo "SQL*Plus execution failed with exit code $SQL_EXIT_CODE"
+                    exit $SQL_EXIT_CODE
+                fi
             '
-            if [ $? -ne 0 ]; then
-                echo "SQL*Plus execution failed!"
-                exit 1
-            fi
         '''
     }
 }

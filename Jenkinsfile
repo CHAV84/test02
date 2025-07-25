@@ -26,24 +26,41 @@ pipeline {
 stage('Run Unit Tests') {
     steps {
         sh '''
-            echo "Checking if test-oracle-db is running..."
-            if [ "$(docker ps -q -f name=test-oracle-db)" = "" ]; then
-                echo "Starting test-oracle-db container..."
-                docker start test-oracle-db || docker run -d --name $TEST_ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1522:1521 $ORACLE_IMAGE
+            echo "Checking if test-oracle-db container exists..."
+            if [ "$(docker ps -aq -f name=test-oracle-db)" = "" ]; then
+                echo "test-oracle-db container does not exist, creating and starting it..."
+                docker run -d --name test-oracle-db -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1522:1521 $ORACLE_IMAGE
+                if [ $? -ne 0 ]; then
+                    echo "Failed to create and start test-oracle-db container."
+                    exit 1
+                fi
             else
-                echo "$TEST_ORACLE_CONTAINER already running."
+                echo "test-oracle-db container exists, checking if running..."
+                if [ "$(docker ps -q -f name=test-oracle-db)" = "" ]; then
+                    echo "Starting test-oracle-db container..."
+                    docker start test-oracle-db
+                    if [ $? -ne 0 ]; then
+                        echo "Failed to start test-oracle-db container."
+                        exit 1
+                    fi
+                else
+                    echo "test-oracle-db container is already running."
+                fi
             fi
 
-            echo "Making sure test-oracle-db is connected to 'jenkins' network..."
-            docker network inspect jenkins | grep test-oracle-db > /dev/null
-            if [ $? -ne 0 ]; then
+            echo "Checking if test-oracle-db is connected to 'jenkins' network..."
+            if ! docker network inspect jenkins | grep test-oracle-db > /dev/null; then
                 echo "Connecting test-oracle-db to jenkins network..."
-                docker network connect jenkins test-oracle-db || true
+                docker network connect jenkins test-oracle-db
+                if [ $? -ne 0 ]; then
+                    echo "Failed to connect test-oracle-db to jenkins network."
+                    exit 1
+                fi
             else
-                echo "test-oracle-db already connected to jenkins network."
+                echo "test-oracle-db is already connected to jenkins network."
             fi
 
-            echo "TEST : Running utPLSQL tests..."
+            echo "Running utPLSQL tests..."
             /opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//test-oracle-db:1522/orclpdb1 \
                 -p=mikep \
                 -f=ut_documentation_reporter -o=run.log \
@@ -60,6 +77,7 @@ stage('Run Unit Tests') {
         '''
     }
 }
+
         
         stage('QS : Clean up old Oracle container') {
             steps {

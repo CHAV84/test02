@@ -42,7 +42,22 @@ stage('Start Oracle DB') {
         '''
     }
 }
-
+        stage('Prepare Network') {
+            steps {
+                script {
+                    // Connect oracle-db container to jenkins network if not already connected
+                    sh '''
+                    if ! docker network inspect jenkins | grep -q oracle-db; then
+                        docker network connect jenkins oracle-db
+                        echo "oracle-db connected to jenkins network"
+                    else
+                        echo "oracle-db already connected to jenkins network"
+                    fi
+                    '''
+                }
+            }
+        }
+        
 stage('Copy SQL Files to Container') {
     steps {
         sh """

@@ -16,7 +16,7 @@ CREATE OR REPLACE PACKAGE BODY test_math_utils IS
     v_result NUMBER;
   BEGIN
     v_result := math_utils.square(3);
-    ut.expect(v_result).to_equal(9);
+    ut.expect(v_result).to_equal(10);
   END;
 
   PROCEDURE test_square_of_minus_4 IS

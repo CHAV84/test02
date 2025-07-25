@@ -5,7 +5,7 @@ pipeline {
     environment {
         ORACLE_IMAGE = 'my-custom-oracle-image-04_with_ut_installed:latest'
         ORACLE_CONTAINER = 'oracle-db'
-        TEST_ORACLE_CONTAINER = 'test-oracle-db'
+        ORACLE_CONTAINER_TEST = 'test-oracle-db'
         ORACLE_PASSWORD = 'oracle'
     }
 
@@ -23,47 +23,95 @@ pipeline {
     }
 }
 
-stage('Run Unit Tests') {
+stage('Copy SQL Files to TEST Container') {
+    steps {
+        sh """
+            docker cp ${WORKSPACE}/. oracle-db:/tmp/sqlscripts/
+        """
+    }
+}
+     
+stage('TEST - Debug Container Mount') {
+    steps {
+        sh """
+            docker exec $TEST_ORACLE_CONTAINER ls -l /tmp/sqlscripts
+        """
+    }
+}
+
+stage(' TEST - Run Setup SQL') {
+    steps {
+        sh '''
+            echo "Running setup.sql script..."
+
+            echo "Executing SQL script in container..."
+            docker exec $TEST_ORACLE_CONTAINER bash -c '
+                sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
+                @/tmp/sqlscripts/setup.sql
+                EXIT
+EOF
+            '
+            if [ $? -ne 0 ]; then
+                echo "SQL*Plus execution failed!"
+                exit 1
+            fi
+        '''
+    }
+}
+        
+stage('Check Oracle Container') {
     steps {
         sh '''
             echo "Checking if test-oracle-db container exists..."
             if [ "$(docker ps -aq -f name=test-oracle-db)" = "" ]; then
-                echo "test-oracle-db container does not exist, creating and starting it..."
+                echo "Creating and starting test-oracle-db container..."
                 docker run -d --name test-oracle-db -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1522:1521 $ORACLE_IMAGE
                 if [ $? -ne 0 ]; then
                     echo "Failed to create and start test-oracle-db container."
                     exit 1
                 fi
             else
-                echo "test-oracle-db container exists, checking if running..."
+                echo "Container exists. Checking if it is running..."
                 if [ "$(docker ps -q -f name=test-oracle-db)" = "" ]; then
-                    echo "Starting test-oracle-db container..."
+                    echo "Starting container..."
                     docker start test-oracle-db
                     if [ $? -ne 0 ]; then
                         echo "Failed to start test-oracle-db container."
                         exit 1
                     fi
                 else
-                    echo "test-oracle-db container is already running."
+                    echo "test-oracle-db is already running."
                 fi
             fi
+        '''
+    }
+}
 
+stage('TEST - Connect Container to Jenkins Network') {
+    steps {
+        sh '''
             echo "Checking if test-oracle-db is connected to 'jenkins' network..."
-            if ! docker network inspect jenkins | grep test-oracle-db > /dev/null; then
-                echo "Connecting test-oracle-db to jenkins network..."
+            if ! docker network inspect jenkins | grep -w '"Name": "test-oracle-db"' > /dev/null; then
+                echo "Connecting to jenkins network..."
                 docker network connect jenkins test-oracle-db
                 if [ $? -ne 0 ]; then
-                    echo "Failed to connect test-oracle-db to jenkins network."
+                    echo "Failed to connect to jenkins network."
                     exit 1
                 fi
             else
-                echo "test-oracle-db is already connected to jenkins network."
+                echo "Already connected to jenkins network."
             fi
+        '''
+    }
+}
 
+stage('TEST - Run utPLSQL Unit Tests') {
+    steps {
+        sh '''
             echo "Running utPLSQL tests..."
             
             /opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//test-oracle-db:1521/orclpdb1 -p=mikep -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html
-            
+
             EXIT_CODE=$?
             if [ $EXIT_CODE -ne 0 ]; then
                 echo "utPLSQL tests failed with exit code $EXIT_CODE"
@@ -75,8 +123,7 @@ stage('Run Unit Tests') {
     }
 }
 
-        
-        stage('QS : Clean up old Oracle container') {
+stage('QS : Clean up old Oracle container') {
             steps {
                 sh '''
                     echo "Removing existing Oracle container if it exists..."
@@ -96,7 +143,7 @@ stage('QS : Start Oracle DB') {
         '''
     }
 }
-        stage('Prepare Network') {
+stage('QS - Prepare Network') {
             steps {
                 script {
                     // Connect oracle-db container to jenkins network if not already connected
@@ -147,7 +194,8 @@ EOF
         '''
     }
 }
-    stage('Run utPLSQL Tests') {
+
+stage('Run utPLSQL Tests') {
       steps {
         // Call the utplsql CLI script with parameters
         sh '/opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//oracle-db:1521/orclpdb1 -p=mikep -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html'

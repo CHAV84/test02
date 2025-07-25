@@ -23,10 +23,10 @@ pipeline {
     }
 }
 
-stage('Copy SQL Files to TEST Container') {
+stage('TEST - Copy SQL Files to Container') {
     steps {
         sh """
-            docker cp ${WORKSPACE}/. oracle-db:/tmp/sqlscripts/
+            docker cp ${WORKSPACE}/. $TEST_ORACLE_CONTAINER:/tmp/sqlscripts/
         """
     }
 }

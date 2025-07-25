@@ -29,7 +29,7 @@ stage('Run Unit Tests') {
             echo "🔍 Checking if test-oracle-db is running..."
             if [ "$(docker ps -q -f name=test-oracle-db)" = "" ]; then
                 echo "Starting test-oracle-db container..."
-                docker start test-oracle-db || ocker run -d --name $TEST_ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 $ORACLE_IMAGE
+                docker start test-oracle-db || docker run -d --name $TEST_ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 $ORACLE_IMAGE
             else
                 echo "$TEST_ORACLE_CONTAINER already running."
             fi

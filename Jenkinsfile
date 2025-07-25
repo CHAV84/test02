@@ -101,7 +101,7 @@ stage('QS : Start Oracle DB') {
                 script {
                     // Connect oracle-db container to jenkins network if not already connected
                     sh '''
-                    if ! docker network inspect jenkins | grep -q oracle-db; then
+                    if ! docker network inspect jenkins | grep -qw '"Name": "oracle-db"'; then
                         docker network connect jenkins oracle-db
                         echo "oracle-db connected to jenkins network"
                     else

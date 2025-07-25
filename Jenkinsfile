@@ -78,18 +78,12 @@ EOF
         '''
     }
 }
-
-        pipeline {
-  agent any
-  stages {
     stage('Run utPLSQL Tests') {
       steps {
         // Call the utplsql CLI script with parameters
         sh '/opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//oracle-db:1521/orclpdb1 -p=mikep -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html'
       }
     }
-  }
-}
 
 stage('Use Oracle DB') {
             steps {

@@ -78,7 +78,28 @@ EOF
         '''
     }
 }
-        stage('Use Oracle DB') {
+        
+stage('Run Unit Tests') {
+    steps {
+        sh '''
+            echo "Running ut.sql script..."
+
+            echo "Executing SQL script in container..."
+            docker exec $ORACLE_CONTAINER bash -c '
+                sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
+                @/tmp/sqlscripts/run_ut.sql
+                EXIT
+EOF
+            '
+            if [ $? -ne 0 ]; then
+                echo "SQL*Plus execution failed!"
+                exit 1
+            fi
+        '''
+    }
+}
+        
+stage('Use Oracle DB') {
             steps {
                 echo 'Oracle DB is up and configured.'
                 // Add your test, build, or integration steps here

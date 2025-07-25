@@ -78,30 +78,24 @@ EOF
         '''
     }
 }
-        
 stage('Run Unit Tests') {
     steps {
         sh '''
-            echo "Running utPLSQL test script..."
+            echo "Running utPLSQL tests via utplsql-cli..."
 
-            docker exec $ORACLE_CONTAINER bash -c '
-                echo "Executing SQL script in container..."
-                sqlplus -s sys/oracle@localhost:1521/orclpdb1 as sysdba <<EOF
-WHENEVER SQLERROR EXIT SQL.SQLCODE
-SET SERVEROUTPUT ON
-@/tmp/sqlscripts/run_ut.sql
-EXIT
-EOF
-                SQL_EXIT_CODE=$?
-                if [ $SQL_EXIT_CODE -ne 0 ]; then
-                    echo "SQL*Plus execution failed with exit code $SQL_EXIT_CODE"
-                    exit $SQL_EXIT_CODE
-                fi
-            '
+            utplsql run mikep/mikep@//oracle-db:1521/orclpdb1 mikep.test_math_utils \
+              -f=ut_documentation_reporter \
+              -f=ut_junit_reporter -o=utplsql-test-results.xml
+
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -ne 0 ]; then
+                echo "utPLSQL CLI tests failed with exit code $EXIT_CODE"
+                exit $EXIT_CODE
+            fi
         '''
     }
 }
-        
+
 stage('Use Oracle DB') {
             steps {
                 echo 'Oracle DB is up and configured.'

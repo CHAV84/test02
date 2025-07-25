@@ -5,6 +5,7 @@ pipeline {
     environment {
         ORACLE_IMAGE = 'my-custom-oracle-image-04_with_ut_installed:latest'
         ORACLE_CONTAINER = 'oracle-db'
+        TEST_ORACLE_CONTAINER = 'test-oracle-db'
         ORACLE_PASSWORD = 'oracle'
     }
 
@@ -22,7 +23,45 @@ pipeline {
     }
 }
 
-        stage('Clean up old Oracle container') {
+stage('Run Unit Tests') {
+    steps {
+        sh '''
+            echo "🔍 Checking if test-oracle-db is running..."
+            if [ "$(docker ps -q -f name=test-oracle-db)" = "" ]; then
+                echo "Starting test-oracle-db container..."
+                docker start test-oracle-db || ocker run -d --name $TEST_ORACLE_CONTAINER -e ORACLE_PASSWORD=$ORACLE_PASSWORD -p 1521:1521 $ORACLE_IMAGE
+            else
+                echo "$TEST_ORACLE_CONTAINER already running."
+            fi
+
+            echo "Making sure test-oracle-db is connected to 'jenkins' network..."
+            docker network inspect jenkins | grep test-oracle-db > /dev/null
+            if [ $? -ne 0 ]; then
+                echo "Connecting test-oracle-db to jenkins network..."
+                docker network connect jenkins test-oracle-db || true
+            else
+                echo "test-oracle-db already connected to jenkins network."
+            fi
+
+            echo "TEST : Running utPLSQL tests..."
+            /opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//test-oracle-db:1521/orclpdb1 \
+                -p=mikep \
+                -f=ut_documentation_reporter -o=run.log \
+                -s \
+                -f=ut_coverage_html_reporter -o=coverage.html
+
+            EXIT_CODE=$?
+            if [ $EXIT_CODE -ne 0 ]; then
+                echo "utPLSQL tests failed with exit code $EXIT_CODE"
+                exit $EXIT_CODE
+            else
+                echo "utPLSQL tests passed"
+            fi
+        '''
+    }
+}
+        
+        stage('QS : Clean up old Oracle container') {
             steps {
                 sh '''
                     echo "Removing existing Oracle container if it exists..."
@@ -31,7 +70,7 @@ pipeline {
             }
         }
         
-stage('Start Oracle DB') {
+stage('QS : Start Oracle DB') {
     steps {
         sh '''
             echo "Starting Oracle container..."

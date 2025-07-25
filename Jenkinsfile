@@ -78,22 +78,17 @@ EOF
         '''
     }
 }
-stage('Run Unit Tests') {
-    steps {
-        sh '''
-            echo "Running utPLSQL tests via utplsql-cli..."
 
-            java -jar /opt/utplsql/utplsql-cli.jar run mikep/mikep@//oracle-db:1521/orclpdb1 mikep.test_math_utils \
-              -f=ut_documentation_reporter \
-              -f=ut_junit_reporter -o=utplsql-test-results.xml
-
-            EXIT_CODE=$?
-            if [ $EXIT_CODE -ne 0 ]; then
-                echo "utPLSQL CLI tests failed with exit code $EXIT_CODE"
-                exit $EXIT_CODE
-            fi
-        '''
+        pipeline {
+  agent any
+  stages {
+    stage('Run utPLSQL Tests') {
+      steps {
+        // Call the utplsql CLI script with parameters
+        sh '/opt/utPLSQL-cli/bin/utplsql run mikep/mikep@//oracle-db:1521/orclpdb1 -p=mikep -f=ut_documentation_reporter -o=run.log -s -f=ut_coverage_html_reporter -o=coverage.html'
+      }
     }
+  }
 }
 
 stage('Use Oracle DB') {
